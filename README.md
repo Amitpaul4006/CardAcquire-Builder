@@ -4,7 +4,7 @@ CardAcquire is a deliberately scaled-down, architecturally honest credit-card ac
 
 ## Current status
 
-Phase 14 is complete: the live worker path now connects BullMQ to KYC, risk scoring, bank-partner verification, and onboarding. This README also documents the presentation model, runtime commands, service boundaries, and audit inspection flow.
+Phase 14 is complete: the live worker path now connects BullMQ to KYC, risk scoring, bank-partner verification, and onboarding. The Render Blueprint now includes API, KYC web service, processing worker, and mock partner; this README documents the presentation model, runtime commands, service boundaries, and audit inspection flow.
 
 ## Repository layout
 

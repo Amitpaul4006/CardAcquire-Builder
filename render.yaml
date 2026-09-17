@@ -18,14 +18,19 @@ services:
         sync: false
       - key: FRONTEND_ORIGIN
         sync: false
+      - key: KYC_SERVICE_URL
+        value: http://cardacquire-kyc-worker:8000
+      - key: BANK_PARTNER_URL
+        value: http://cardacquire-bank-partner:4000
       - key: UPLOAD_DIRECTORY
         value: /tmp/cardacquire-uploads
 
-  - type: worker
+  - type: web
     name: cardacquire-kyc-worker
     runtime: python
     buildCommand: pip install -r services/kyc-worker/requirements.txt
     startCommand: uvicorn app.main:app --app-dir services/kyc-worker --host 0.0.0.0 --port 8000
+    healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
         sync: false
@@ -35,3 +40,40 @@ services:
         sync: false
       - key: ANTHROPIC_MODEL
         value: claude-3-5-haiku-latest
+      - key: KYC_USE_LLM
+        value: "true"
+
+  - type: worker
+    name: cardacquire-processing-worker
+    runtime: node
+    buildCommand: npm install && npm run prisma:generate --workspace=@cardacquire/api && npm run build --workspace=@cardacquire/api
+    startCommand: npm run worker --workspace=@cardacquire/api
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: KYC_SERVICE_URL
+        value: http://cardacquire-kyc-worker:8000
+      - key: BANK_PARTNER_URL
+        value: http://cardacquire-bank-partner:4000
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+
+  - type: web
+    name: cardacquire-bank-partner
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm run dev --workspace=@cardacquire/bank-partner-mock
+    healthCheckPath: /health
+    envVars:
+      - key: BANK_PARTNER_PORT
+        value: "4000"
+      - key: BANK_PARTNER_LATENCY_MIN_MS
+        value: "100"
+      - key: BANK_PARTNER_LATENCY_MAX_MS
+        value: "500"
+      - key: BANK_PARTNER_FAILURE_RATE
+        value: "0"

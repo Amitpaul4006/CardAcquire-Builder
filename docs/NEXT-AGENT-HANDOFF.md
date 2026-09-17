@@ -39,13 +39,11 @@ The right-side assistant panel is implemented in `apps/web/src/App.tsx`. Keep it
 
 ## Deployment next steps
 
-1. Create GitHub and GitLab repositories.
-2. Push the repository after verifying no `.env` or API secret is tracked.
-3. Create Neon PostgreSQL and Upstash Redis databases.
-4. Deploy Render API and KYC services from `render.yaml`.
-5. Deploy `apps/web` to Vercel.
-6. Set `FRONTEND_ORIGIN` and `VITE_API_BASE_URL` to final public URLs.
-7. Run signup, upload, approval/failure, assistant, audit, and admin smoke tests.
+1. Create Neon PostgreSQL and Upstash Redis databases.
+2. Deploy the complete Render Blueprint: API, public KYC web service, Node processing worker, and mock partner.
+3. Deploy `apps/web` to Vercel.
+4. Set `FRONTEND_ORIGIN` and `VITE_API_BASE_URL` to final public URLs.
+5. Run signup, upload, approval/failure, assistant, audit, and admin smoke tests.
 
 ## Validation baseline
 
