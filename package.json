@@ -1,0 +1,16 @@
+{
+  "name": "cardacquire",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web",
+    "services/bank-partner-mock"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

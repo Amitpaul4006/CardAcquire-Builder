@@ -1,0 +1,95 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cardacquire}
+      POSTGRES_USER: ${POSTGRES_USER:-cardacquire}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cardacquire_local_only}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cardacquire} -d ${POSTGRES_DB:-cardacquire}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    profiles: ["application"]
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: ${DATABASE_URL:-postgresql://cardacquire:cardacquire_local_only@postgres:5432/cardacquire}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      REDIS_QUEUE_NAME: ${REDIS_QUEUE_NAME:-application-processing}
+      KYC_SERVICE_URL: ${KYC_SERVICE_URL:-http://kyc-worker:8000}
+      BANK_PARTNER_URL: ${BANK_PARTNER_URL:-http://bank-partner-mock:4000}
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./services/kyc-worker
+    profiles: ["application"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://cardacquire:cardacquire_local_only@postgres:5432/cardacquire}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      REDIS_QUEUE_NAME: ${REDIS_QUEUE_NAME:-application-processing}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-3-5-haiku-latest}
+      KYC_USE_LLM: ${KYC_USE_LLM:-true}
+      ASSISTANT_USE_LLM: ${ASSISTANT_USE_LLM:-true}
+    ports:
+      - "${KYC_WORKER_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./apps/web
+    profiles: ["application"]
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000}
+    ports:
+      - "${WEB_PORT:-5173}:5173"
+    depends_on:
+      - api
+
+  bank-partner-mock:
+    build:
+      context: ./services/bank-partner-mock
+    profiles: ["application"]
+    environment:
+      BANK_PARTNER_PORT: 4000
+      BANK_PARTNER_LATENCY_MIN_MS: ${BANK_PARTNER_LATENCY_MIN_MS:-100}
+      BANK_PARTNER_LATENCY_MAX_MS: ${BANK_PARTNER_LATENCY_MAX_MS:-500}
+      BANK_PARTNER_FAILURE_RATE: ${BANK_PARTNER_FAILURE_RATE:-0}
+    ports:
+      - "${BANK_PARTNER_PORT:-4000}:4000"
+
+volumes:
+  postgres_data:
+  redis_data:

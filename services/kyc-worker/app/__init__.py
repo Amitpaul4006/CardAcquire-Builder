@@ -1,0 +1,1 @@
+"""CardAcquire KYC worker service."""
