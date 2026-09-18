@@ -3,6 +3,7 @@ services:
     name: cardacquire-api
     runtime: node
     buildCommand: npm install && npm run prisma:generate --workspace=@cardacquire/api && npm run build --workspace=@cardacquire/api
+    preDeployCommand: npm run prisma:migrate:deploy --workspace=@cardacquire/api
     startCommand: npm run start --workspace=@cardacquire/api
     healthCheckPath: /health
     envVars:

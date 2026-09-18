@@ -17,6 +17,7 @@ newgrp docker -c 'docker exec "$(docker compose ps -q postgres)" pg_isready -U c
 export DATABASE_URL='postgresql://cardacquire:cardacquire_local_only@localhost:5432/cardacquire'
 npm run prisma:validate --workspace=@cardacquire/api
 npm run prisma:migrate:dev --workspace=@cardacquire/api
+npm run prisma:migrate:deploy --workspace=@cardacquire/api
 ```
 
 ## Start each service
