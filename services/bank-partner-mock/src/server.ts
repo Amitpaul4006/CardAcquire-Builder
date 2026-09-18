@@ -3,7 +3,7 @@ import express from 'express';
 const app = express();
 app.use(express.json());
 
-const port = Number(process.env.BANK_PARTNER_PORT ?? 4000);
+const port = Number(process.env.PORT ?? process.env.BANK_PARTNER_PORT ?? 4000);
 const latencyMinMs = Number(process.env.BANK_PARTNER_LATENCY_MIN_MS ?? 100);
 const latencyMaxMs = Number(process.env.BANK_PARTNER_LATENCY_MAX_MS ?? 500);
 const failureRate = Number(process.env.BANK_PARTNER_FAILURE_RATE ?? 0);

@@ -18,6 +18,12 @@ services:
         sync: false
       - key: FRONTEND_ORIGIN
         sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-3-5-haiku-latest
+      - key: ASSISTANT_USE_LLM
+        value: "true"
       - key: KYC_SERVICE_URL
         value: http://cardacquire-kyc-worker:8000
       - key: BANK_PARTNER_URL
@@ -29,7 +35,7 @@ services:
     name: cardacquire-kyc-worker
     runtime: python
     buildCommand: pip install -r services/kyc-worker/requirements.txt
-    startCommand: uvicorn app.main:app --app-dir services/kyc-worker --host 0.0.0.0 --port 8000
+    startCommand: uvicorn app.main:app --app-dir services/kyc-worker --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL

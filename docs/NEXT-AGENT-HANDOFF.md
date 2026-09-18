@@ -23,6 +23,7 @@ The live local worker path is connected: `SUBMITTED -> KYC_IN_PROGRESS -> RISK_R
 - `KYC_SERVICE_URL`, `BANK_PARTNER_URL`: worker service URLs.
 - `ANTHROPIC_API_KEY`: user-owned secret; never commit or paste into chat.
 - `KYC_USE_LLM=true`: enables Anthropic extraction/reasoning in the worker. Rules remain authoritative.
+- `ASSISTANT_USE_LLM=true`: enables Anthropic replies in the assistant; safe local replies remain the fallback.
 - `VITE_API_BASE_URL`, `FRONTEND_ORIGIN`: frontend/API CORS configuration.
 
 ## AI behavior and next AI task
