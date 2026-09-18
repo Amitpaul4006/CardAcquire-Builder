@@ -131,6 +131,8 @@ Phase 13 deployment configuration targets Render for the API and Python KYC serv
 
 Render's background-worker availability and free-tier limits can change. If a free Render worker is unavailable, deploy the Python service as a separately managed Render web service or use another free worker host; the API, Neon, Upstash, and Vercel boundaries remain the same. Render's ephemeral filesystem means local document uploads are demo-only; durable public document storage belongs in the S3 phase.
 
+Railway can also host the demo services. Follow [docs/RAILWAY_DEPLOYMENT.md](docs/RAILWAY_DEPLOYMENT.md) for service root directories, Railway commands, Prisma migration variables, KYC Docker setup, and smoke tests. Railway's free/trial usage is credit-based rather than an unlimited permanent free tier.
+
 Start the mock bank partner with `npm run dev --workspace=@cardacquire/bank-partner-mock`. Configure latency and failure injection through `BANK_PARTNER_LATENCY_MIN_MS`, `BANK_PARTNER_LATENCY_MAX_MS`, and `BANK_PARTNER_FAILURE_RATE`. The API resilience tests cover retry behavior and circuit CLOSED, OPEN, HALF_OPEN, and recovered states.
 
 ## Authentication configuration
